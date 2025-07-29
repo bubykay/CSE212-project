@@ -33,6 +33,15 @@ public class Maze
     public void MoveLeft()
     {
         // FILL IN CODE
+        if (_currX > 0)
+        {
+            _currX -= 1;
+        }
+        else
+        {
+
+            _currX = 0;
+        }
     }
 
     /// <summary>
@@ -42,6 +51,7 @@ public class Maze
     public void MoveRight()
     {
         // FILL IN CODE
+        _currX += 1;
     }
 
     /// <summary>
@@ -51,6 +61,10 @@ public class Maze
     public void MoveUp()
     {
         // FILL IN CODE
+        if (_currY > 0)
+        {
+            _currY -= 1;
+        }
     }
 
     /// <summary>
@@ -60,6 +74,7 @@ public class Maze
     public void MoveDown()
     {
         // FILL IN CODE
+        _currY += 1;
     }
 
     public string GetStatus()
