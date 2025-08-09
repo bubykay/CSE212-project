@@ -15,7 +15,13 @@ public static class Recursion
     public static int SumSquaresRecursive(int n)
     {
         // TODO Start Problem 1
-        return 0;
+
+        if (n <= 0)
+        {
+            return 0;
+        }
+        return n * n + SumSquaresRecursive(n - 1);
+
     }
 
     /// <summary>
@@ -40,6 +46,20 @@ public static class Recursion
     public static void PermutationsChoose(List<string> results, string letters, int size, string word = "")
     {
         // TODO Start Problem 2
+
+        if (word.Length == size)
+        {
+            results.Add(word);
+            return;
+        }
+
+        for (var i = 0; i < letters.Length; i++)
+        {
+            var chosen = letters[i];
+            var lettersLeft = letters.Remove(i, 1);
+            PermutationsChoose(results, lettersLeft, size, word + chosen);
+        }
+
     }
 
     /// <summary>
@@ -86,6 +106,7 @@ public static class Recursion
     /// </summary>
     public static decimal CountWaysToClimb(int s, Dictionary<int, decimal>? remember = null)
     {
+
         // Base Cases
         if (s == 0)
             return 0;
@@ -98,8 +119,15 @@ public static class Recursion
 
         // TODO Start Problem 3
 
+        remember ??= new Dictionary<int, decimal>();
+
+        // Check if result is already computed
+        if (remember.TryGetValue(s, out decimal value))
+            return value;
+
         // Solve using recursion
-        decimal ways = CountWaysToClimb(s - 1) + CountWaysToClimb(s - 2) + CountWaysToClimb(s - 3);
+        decimal ways = CountWaysToClimb(s - 1, remember) + CountWaysToClimb(s - 2, remember) + CountWaysToClimb(s - 3, remember);
+        remember[s] = ways;
         return ways;
     }
 
@@ -119,6 +147,25 @@ public static class Recursion
     public static void WildcardBinary(string pattern, List<string> results)
     {
         // TODO Start Problem 4
+
+        // Find the index of the first '*'
+        int starIndex = pattern.IndexOf('*');
+
+        // Base case: if no wildcard '*', just add the pattern to results
+        if (starIndex == -1)
+        {
+            results.Add(pattern);
+            return;
+        }
+
+        // Replace the '*' with '0' and recurse
+        string patternWithZero = string.Concat(pattern.AsSpan()[..starIndex], "0", pattern.AsSpan(starIndex + 1));
+        WildcardBinary(patternWithZero, results);
+
+        // Replace the '*' with '1' and recurse
+        string patternWithOne = string.Concat(pattern.AsSpan(0, starIndex), "1", pattern.AsSpan(starIndex + 1));
+        WildcardBinary(patternWithOne, results);
+
     }
 
     /// <summary>
@@ -129,15 +176,61 @@ public static class Recursion
     {
         // If this is the first time running the function, then we need
         // to initialize the currPath list.
-        if (currPath == null) {
-            currPath = new List<ValueTuple<int, int>>();
+        currPath ??= [];
+
+        if (!maze.IsValidMove(currPath, x, y))
+            return;
+
+        // Add the current position (x,y), not a fixed point
+        currPath.Add((x, y));
+
+        if (maze.IsEnd(x, y))
+        {
+            results.Add("<List>{" + string.Join(", ", currPath.Select(p => $"({p.Item1}, {p.Item2})")) + "}");
+            currPath.RemoveAt(currPath.Count - 1);
+            return;
         }
-        
-        // currPath.Add((1,2)); // Use this syntax to add to the current path
 
-        // TODO Start Problem 5
-        // ADD CODE HERE
+        SolveMaze(results, maze, x + 1, y, currPath);
+        SolveMaze(results, maze, x - 1, y, currPath);
+        SolveMaze(results, maze, x, y + 1, currPath);
+        SolveMaze(results, maze, x, y - 1, currPath);
 
-        // results.Add(currPath.AsString()); // Use this to add your path to the results array keeping track of complete maze solutions when you find the solution.
+        currPath.RemoveAt(currPath.Count - 1);
+    }
+
+    public static void Permutations(string letters, string word = "")
+    {
+        Console.WriteLine($"Permutation called and word is => {word}");
+        // Try adding each of the available letters
+        // to the 'word' and add up all the
+        // resulting permutations.
+        if (letters.Length == 0)
+        {
+            Console.WriteLine(word);
+        }
+        else
+        {
+            for (var i = 0; i < letters.Length; i++)
+            {
+                // Make a copy of the letters to pass to the
+                // the next call to permutations.  We need
+                // to remove the letter we just added before
+                // we call permutations again.
+                var lettersLeft = letters.Remove(i, 1);
+
+                // Add the new letter to the word we have so far
+                Permutations(lettersLeft, word + letters[i]);
+            }
+        }
+    }
+
+    public static int Factorial(int num)
+    {
+        if (num <= 0)
+        {
+            return 1;
+        }
+        return num * Factorial(num - 1);
     }
 }
